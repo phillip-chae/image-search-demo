@@ -5,10 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "ingestapi",
-    "ingestworker",
-    "indexapi",
-    "shared",
 ]
 
 [tool.uv]
@@ -17,13 +13,13 @@ package = false
 [tool.uv.workspace]
 members = [
     "shared",
-    "indexapi",
     "ingestworker",
     "ingestapi",
+    "searchapi",
 ]
 
 [tool.uv.sources]
 shared = { workspace = true }
 ingestworker = { workspace = true }
 ingestapi = { workspace = true }
-indexapi = { workspace = true }
+searchapi = { workspace = true }
