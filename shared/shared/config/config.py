@@ -17,7 +17,7 @@ class BaseConfig(BaseSettings):
         alias_generator=to_pascal,
         # env things
         env_prefix = '',
-        env_nested_delimiter='_',
+        env_nested_delimiter='__',
         nested_model_default_partial_update=True,
         extra='ignore'
     )

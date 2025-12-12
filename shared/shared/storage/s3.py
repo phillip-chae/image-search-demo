@@ -80,3 +80,15 @@ class S3Storage(Storage):
                     print(f"Bucket {bucket_name} created successfully. Retrying download...")
                     return self.download(bucket_name, key, extra_args)
             return b""
+        
+    def delete(self, bucket_name: str, key: str, extra_args: dict = {}) -> bool:
+        try:
+            self.client.delete_object(
+                Bucket=bucket_name, 
+                Key=key, 
+                **extra_args
+            )
+            return True
+        except ClientError as e:
+            print(f"Delete failed: {e}")
+            return False

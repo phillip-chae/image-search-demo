@@ -36,11 +36,25 @@ class Storage(ABC):
         pass
 
     @abstractmethod
+    def exists(self, bucket_name: str, key: str) -> bool:
+        """
+        Checks if a file exists in the specified bucket.
+        :param bucket_name: Name of the bucket
+        :param key: Key of the file
+        :return: True if the file exists, False otherwise
+        """
+        pass
+
+    @abstractmethod
     def upload(self, bucket_name: str, file_content: bytes, key: str, extra_args: dict = {}) -> str:
         pass
 
     @abstractmethod
     def download(self, bucket_name: str, key: str, extra_args: dict = {}) -> bytes:
+        pass
+
+    @abstractmethod
+    def delete(self, bucket_name: str, key: str, extra_args: dict = {}) -> bool:
         pass
 
 def new_storage(cfg: StorageConfig) -> Storage:

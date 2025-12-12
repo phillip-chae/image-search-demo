@@ -1,0 +1,1 @@
+INGEST_BUCKET = "ingest-image"
