@@ -17,7 +17,47 @@
 	},
 	"hostRequirements": {
 		"gpu": "optional"
-	}
+	},
+	"runArgs": [
+		"--network=production-demo-network"
+	],
+	"initializeCommand": "make docker-init",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"tamasfe.even-better-toml"
+			],
+			"settings": {
+				"python.analysis.diagnosticMode": "workspace",
+				"python.analysis.indexing": false,
+				"python.analysis.autoSearchPaths": false,
+				"python.analysis.include": [
+					"ingestapi",
+					"ingestworker",
+					"searchapi",
+					"shared"
+				],
+				"python.analysis.exclude": [
+					"**/.venv/**",
+					"**/__pycache__/**",
+					"**/.pytest_cache/**",
+					"**/.mypy_cache/**",
+					"data/**",
+					"cdnapi/**",
+					"pkg/**",
+					"frontend/**",
+					"docker/**",
+					"helm-chart/**"
+				],
+				"files.watcherExclude": {
+					"**/.venv/**": true,
+					"**/__pycache__/**": true,
+					"data/**": true
+				}
+			}
+		}
+	},
+	
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -26,7 +66,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
+	"postCreateCommand": "uv sync --extra gpu --link-mode=copy",
 
 	// Configure tool-specific properties.
 	// "customizations": {},

@@ -1,0 +1,57 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch ingestapi",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/ingestapi/main.py",
+            "console": "internalConsole",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/shared"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "Launch ingestworker",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/ingestworker/main.py",
+            "console": "internalConsole",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/shared"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "Init ingestworker",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/ingestworker/main.py",
+            "console": "internalConsole",
+            "args": ["--init"],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/shared"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "Launch searchapi",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/searchapi/main.py",
+            "console": "internalConsole",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/shared"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "Launch cdnapi",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cdnapi/cmd/cdnapid/main.go",
+        }
+    ]
+}
