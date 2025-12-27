@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from celery import Celery
 
-from shared.storage import new_storage, Storage
+from shared.storage.s3 import S3
 from ingestapi.config import Config, conf_path, service_name
 from ingestapi.service.ingest import IngestService
 
@@ -20,8 +20,8 @@ def get_celery(broker_url: str) -> Celery:
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    storage: providers.Provider[Storage] = providers.Singleton(
-        new_storage,
+    storage: providers.Provider[S3] = providers.Singleton(
+        S3,
         cfg=cfg.storage
     )
 

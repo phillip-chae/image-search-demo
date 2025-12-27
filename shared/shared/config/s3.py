@@ -2,12 +2,7 @@ from .config import BaseComponent
 from pydantic import Field
 from enum import Enum
 
-class StorageType(Enum):
-    S3 = 0
-    MINIO = 1
-
-class StorageConfig(BaseComponent):
-    type: int = Field(default=StorageType.S3.value, description="Type of storage backend (e.g., 's3', 'minio')")
+class S3Config(BaseComponent):
     region: str = Field(default="", description="Region of the storage service")
     host: str = Field(default="", description="Host address of the storage service")
     port: int = Field(default=0, description="Port number of the storage service")

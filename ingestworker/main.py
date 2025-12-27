@@ -1,9 +1,12 @@
 from celery import Celery
 from celery.signals import worker_process_init
 import logging
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 
-from ingestworker.config import service_name
-from ingestworker.container import Container, cfg
+from ingestworker.config import service_name, cfg
+from ingestworker.container import Container
 from ingestworker.task import task_routes
 
 logger = logging.getLogger(__name__)
@@ -33,19 +36,19 @@ def init_svcs(**kwargs):
     logger.info("services preloaded successfully")
 
 
-async def init():
+def init():
     from pathlib import Path
     from shared.model.index import INDEX_BUCKET
-    container = Container()
+    from shared.storage.s3 import S3
+    from ingestworker.repo.image import ImageRepository
 
     # Initialize storage
-    storage = container.storage()
-    if not storage.check_connection(INDEX_BUCKET):
-        storage.create_bucket(INDEX_BUCKET)
+    s3 = S3(cfg.s3)
+    if not s3.check_connection(INDEX_BUCKET):
+        s3.create_bucket(INDEX_BUCKET)
 
     # Initialize dbs
-    repo = container.repo()
-    await repo.init(cfg.milvus_db)
+    ImageRepository.init(cfg.milvus_db)
 
     # Add sample data ingestion
     svc = container.ingest_service()
@@ -53,7 +56,7 @@ async def init():
     sample_images = Path(project_root / "data" / "train").rglob("*.JPEG")
     for img_path in sample_images:
         logger.info(f"pre-ingesting sample image: {img_path}")
-        await svc.ingest(img_path, img_path.name)
+        svc.ingest(img_path, img_path.name)
 
 if __name__ == "__main__":
     import sys
@@ -62,7 +65,6 @@ if __name__ == "__main__":
     parser.add_argument("--init", action="store_true", help="Pre-ingest sample data and exit")
     args = parser.parse_args()
     if args.init:
-        import asyncio
-        asyncio.run(init())
+        init()
     print("Exiting ingest worker. Do not start it directly; use 'celery -A ingestworker.main worker --loglevel=info'")
     sys.exit(0)

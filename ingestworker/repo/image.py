@@ -1,7 +1,7 @@
 from pymilvus import MilvusClient, DataType
 
 from shared.model.index import IndexItem
-from shared.repo.milvus import AsyncMilvusRepository
+from shared.repo.milvus import MilvusRepository
 from .import INGEST_DB
 
 VECTOR_COLLECTION = "vector"
@@ -19,15 +19,15 @@ index_params.add_index("vector", "HNSW", "vector_index",
     params= {"M": 16, "efConstruction": 200}
 )
 
-class ImageRepository(AsyncMilvusRepository[IndexItem]):
+class ImageRepository(MilvusRepository[IndexItem]):
     model = IndexItem
     collection_name = VECTOR_COLLECTION
     database_name = INGEST_DB
     collection_schema = collection_schema
     index_params = index_params
     
-    async def search(self, embedding: list[float]) -> list[IndexItem]:
-        results = await self.client.search(
+    def search(self, embedding: list[float]) -> list[IndexItem]:
+        results = self.client.search(
             collection_name=self.collection_name,
             data=[embedding],
             anns_field="vector",

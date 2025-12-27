@@ -1,19 +1,17 @@
 from dependency_injector import containers, providers
 
-from shared.storage import new_storage, Storage
+from shared.storage.s3 import S3
 
-from ingestworker.config import Config, conf_path
+from ingestworker.config import cfg
 from ingestworker.repo.image import ImageRepository
 from ingestworker.service.ingest import IngestService
-
-cfg = Config.from_yaml(conf_path)
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    storage: providers.Provider[Storage] = providers.Singleton(
-        new_storage,
-        cfg=cfg.storage
+    s3: providers.Provider[S3] = providers.Singleton(
+        S3,
+        cfg=cfg.s3
     )
 
     repo: providers.Provider[ImageRepository] = providers.Singleton(
@@ -24,5 +22,5 @@ class Container(containers.DeclarativeContainer):
     ingest_service = providers.Singleton(
         IngestService,
         repo=repo,
-        storage=storage,
+        s3=s3,
     )

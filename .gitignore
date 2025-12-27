@@ -3,3 +3,4 @@
 .env
 *.png
 **/*.egg-info
+data

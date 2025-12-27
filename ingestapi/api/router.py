@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .routes import ingest
+from .v1.routes import ingest
 
 router = APIRouter()
 router.include_router(ingest.router)

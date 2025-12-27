@@ -4,11 +4,34 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-]
+# dependencies = [
+#     "shared",
+#     "ingestworker",
+#     "ingestapi",
+#     "searchapi"
+# ]
+
+# [project.optional-dependencies]
+# cpu = [
+#     "ingestworker[cpu]",
+#     "searchapi[cpu]",
+#     "shared[torch-cpu]",
+# ]
+# gpu = [
+#     "ingestworker[gpu]",
+#     "searchapi[gpu]",
+#     "shared[torch-gpu]",
+# ]
 
 [tool.uv]
 package = false
+
+conflicts = [
+    [
+        { extra = "cpu" },
+        { extra = "gpu" },
+    ],
+]
 
 [tool.uv.workspace]
 members = [

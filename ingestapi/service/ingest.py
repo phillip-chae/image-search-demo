@@ -4,7 +4,7 @@ from logging import getLogger
 from uuid_extensions import uuid7str
 from typing import cast
 
-from shared.storage import Storage
+from shared.storage.s3 import S3
 from shared.constant import INGEST_BUCKET
 from ingestworker.task import INGEST_TASK
 from . import StorageUploadError, CeleryTaskError
@@ -15,7 +15,7 @@ class IngestService:
         
     def __init__(
         self, 
-        storage: Storage,
+        storage: S3,
         celery: Celery
     ):
         if not storage.check_connection(INGEST_BUCKET):

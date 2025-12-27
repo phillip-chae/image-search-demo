@@ -34,12 +34,13 @@ class MilvusRepository(Generic[T]):
             client.create_database(cls.database_name)
         client.use_database(cls.database_name)
 
-        if not cls.collection_name in client.list_collections():
-            client.create_collection(
-                cls.collection_name, 
-                schema=cls.collection_schema, 
-                index_params=cls.index_params
-            )
+        if cls.collection_name in client.list_collections(): #type: ignore
+            client.drop_collection(cls.collection_name)
+        client.create_collection(
+            cls.collection_name, 
+            schema=cls.collection_schema, 
+            index_params=cls.index_params
+        )
         client.load_collection(collection_name=cls.collection_name)
         client.close()
 

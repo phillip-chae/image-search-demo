@@ -48,8 +48,7 @@ ARG HOME="/etc/production-demo"
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="${HOME}/.venv/bin:$PATH"
-ENV PYTHONPATH="${HOME}/ingestworker"
-ENV DEEPFACE_HOME="${HOME}/ai"
+ENV PYTHONPATH="${HOME}"
 
 RUN apt-get update &&\
     apt-get install -y --no-install-recommends \
@@ -64,8 +63,6 @@ WORKDIR "${HOME}"
 # Bring the Python install and virtual environment from the builder stage
 COPY --from=builder ${HOME}/.local/share/uv/python ${HOME}/.local/share/uv/python
 COPY --from=builder ${HOME}/.venv ${HOME}/.venv
-
-WORKDIR "${HOME}/ingestworker"
 COPY conf/ingestworker.yaml conf/ingestworker.yaml
 COPY ingestworker ingestworker
 
@@ -77,4 +74,4 @@ ARG GIT_REVISION
 RUN echo "MODULE_NAME = \"${NAME}\"\nVERSION = \"${VER}\"\nBUILD_TIME = \"${BUILD_TIME}\"\nGIT_REVISION = \"${GIT_REVISION}\"" > "${NAME}/version.py"
 
 # ENTRYPOINT ["sleep", "infinity"]
-ENTRYPOINT ["python3", "-m", "celery", "-A", "ingestworker.app", "worker", "--loglevel=info", "--concurrency=1", "--pool=prefork",  "-n", "ingestworker-worker@%h"]
+ENTRYPOINT ["python3", "-m", "celery", "-A", "ingestworker.main:app", "worker", "--loglevel=info", "--concurrency=1", "--pool=prefork",  "-n", "ingestworker-worker@%h"]

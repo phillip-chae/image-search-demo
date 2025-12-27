@@ -40,6 +40,7 @@ ENV PATH="${HOME}/.venv/bin:${HOME}:$PATH"
 
 WORKDIR "${HOME}"
 COPY --from=builder "${HOME}/.venv" .venv
+COPY ingestworker ingestworker
 COPY conf/ingestapi.yaml conf/ingestapi.yaml
 COPY ingestapi ingestapi
 

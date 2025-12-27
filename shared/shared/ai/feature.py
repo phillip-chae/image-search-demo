@@ -11,7 +11,7 @@ class FeatureExtractor:
             normalize: bool = True
         ):
             import timm
-            from timm.data import resolve_model_data_config
+            from timm.data.config import resolve_model_data_config
             from timm.data.transforms_factory import create_transform
             self.normalize = normalize
             # Load the pre-trained model

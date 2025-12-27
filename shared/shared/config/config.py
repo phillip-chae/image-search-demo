@@ -7,6 +7,8 @@ from pydantic.alias_generators import to_pascal
 class BaseComponent(BaseModel):
     model_config = ConfigDict(
         alias_generator=to_pascal,
+        validate_by_name=True,
+        validate_by_alias=True
     )
 
 class BaseConfig(BaseSettings):
@@ -19,7 +21,9 @@ class BaseConfig(BaseSettings):
         env_prefix = '',
         env_nested_delimiter='__',
         nested_model_default_partial_update=True,
-        extra='ignore'
+        extra='ignore',
+        validate_by_name=True,
+        validate_by_alias=True
     )
 
     @classmethod

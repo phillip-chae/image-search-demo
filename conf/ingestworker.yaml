@@ -1,13 +1,12 @@
-Storage:
-  Type: 1
+S3:
   Host: minio
   Port: 9000
 
 Redis:
   Host: redis
   Port: 6379
-  DB: 0
+  Db: 0
 
 MilvusDb: 
-  host: milvus-standalone
-  port: 19530
+  Host: milvus-standalone
+  Port: 19530

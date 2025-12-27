@@ -1,13 +1,14 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from dependency_injector.wiring import inject, Provide
+from typing import Annotated
 
 from ingestapi.container import Container
 from ingestapi.service.ingest import IngestService
 from .. import version
 
 tag = "ingest"
-prefix = f"/api/{version}/ingest"
+prefix = f"/api/{version}/{tag}"
 router = APIRouter(prefix=prefix, tags=[tag])
 
 @router.post(
@@ -17,9 +18,9 @@ router = APIRouter(prefix=prefix, tags=[tag])
 )
 @inject
 async def create_ingest(
-    file: UploadFile = File(..., description="Image to be ingested for image search"),
+    file: Annotated[UploadFile, File(..., description="Image to be ingested for image search")],
     # injected dependencies
-    ingest_service: IngestService = Provide[Container.ingest_service]
+    ingest_service: Annotated[IngestService, Depends(Provide[Container.ingest_service])]
 ):
     try:
         file_bytes = await file.read()
@@ -42,7 +43,7 @@ async def create_ingest(
 @inject
 async def get_ingest(
     task_id: str, 
-    ingest_service: IngestService = Provide[Container.ingest_service]
+    ingest_service: Annotated[IngestService, Depends(Provide[Container.ingest_service])]
 ):
     try:
         res = await ingest_service.read_ingest(task_id)

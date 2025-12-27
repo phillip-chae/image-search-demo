@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import BinaryIO
 
-from shared.storage import Storage
+from shared.storage.s3 import S3
 from shared.logger import get_logger
 from shared.hash.phash import Phasher
 from shared.model.index import IndexItem, IndexResponse, INDEX_BUCKET
@@ -13,17 +13,17 @@ class IngestService:
     def __init__(
         self,
         repo: ImageRepository,
-        storage: Storage,
+        s3: S3,
     ):
         from shared.ai.encode import ClipEncoder
         from magic import Magic
         self.repo = repo
-        self.storage = storage
+        self.s3 = s3
         self.mime_magic = Magic(mime=True)
         self.encoder = ClipEncoder()
         self.phasher = Phasher()
     
-    async def ingest(
+    def ingest(
         self, 
         image_file: str | Path | BinaryIO, 
         file_name: str
@@ -39,7 +39,6 @@ class IngestService:
                 should_close = False
             try:
                 embedding = self.encoder.encode_image(file)
-                file.seek(0)
                 phash = self._calculate_phash(file)
                 image_bytes = file.read()
                 
@@ -50,7 +49,7 @@ class IngestService:
             data = IndexItem(
                 id=phash,
                 file_name=file_name,
-                embedding=embedding,
+                vector=embedding
             )
             logger.debug("Ingested data prepared", extra={
                 "phash": phash,
@@ -58,9 +57,9 @@ class IngestService:
             })
             # Because no interaction with other dbs and data types are necessary, I handle the storing in the same function;
             # in real implementation, I would separate them with a separate indexing application/service
-            ids = await self.repo.create([data])
+            ids = self.repo.create([data])
             # In real implementation, I would determine image type based on magic, and mark the metadata to the object
-            self.storage.upload(INDEX_BUCKET, image_bytes, phash, extra_args={
+            self.s3.upload(INDEX_BUCKET, image_bytes, phash, extra_args={
                 "ContentType": self.mime_magic.from_buffer(image_bytes)
             })
             
@@ -77,10 +76,9 @@ class IngestService:
             return resp
     
     def _calculate_phash(self, image_file: BinaryIO) -> str:
-        with image_file as f:
-            f.seek(0)
-            phash = self.phasher(f)
-            f.seek(0)
-            return phash
+        image_file.seek(0)
+        phash = self.phasher(image_file)
+        image_file.seek(0)
+        return phash
 
     

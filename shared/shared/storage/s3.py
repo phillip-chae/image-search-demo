@@ -1,17 +1,18 @@
 import boto3
 from botocore.exceptions import ClientError
 from botocore.client import BaseClient
-from base64 import b64decode
 
-from shared.config import StorageConfig
-from . import Storage
-
+from shared.config import S3Config
 MB = 1024 * 1024
 chunk_size = 8 * MB  # 8MB
 
-class S3Storage(Storage):
-    def __init__(self, cfg: StorageConfig):
-        super().__init__(cfg)
+class S3:
+    def __init__(self, cfg: S3Config):
+        scheme = "https" if cfg.ssl else "http"
+        host = cfg.host if not "://" in cfg.host else cfg.host.split("://")[1]
+        port = f":{cfg.port}" if cfg.port else ""
+        self.endpoint = f"{scheme}://{host}{port}"
+        self.cfg = cfg
         self.client: BaseClient = boto3.client(
             "s3",
             endpoint_url=self.endpoint,

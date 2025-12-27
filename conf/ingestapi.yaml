@@ -1,5 +1,4 @@
-Storage:
-  Type: 1
+S3:
   Host: minio
   Port: 9000
 

@@ -2,9 +2,8 @@ from dependency_injector.wiring import inject, Provide
 from celery import Task
 import time
 from io import BytesIO
-import asyncio
 
-from shared.storage import Storage
+from shared.storage.s3 import S3
 from shared.constant import INGEST_BUCKET
 from shared.logger import get_logger
 from shared.model.index import IndexResponse
@@ -30,7 +29,7 @@ def ingest_task(
     key: str,
     file_name: str,
     # Dependency Injection
-    storage: Storage = Provide[Container.storage],
+    s3: S3 = Provide[Container.s3],
     ingest_service: IngestService = Provide[Container.ingest_service]) -> IndexResponse:
     """Ingest task to process data and send to index service."""
 
@@ -38,17 +37,16 @@ def ingest_task(
     resp = IndexResponse()
 
     try:
-        image_bytes = storage.download(INGEST_BUCKET, key)
+        image_bytes = s3.download(INGEST_BUCKET, key)
         if not image_bytes:
             logger.error("failed to download image from storage", extra={
                 "key": key, 
                 "bucket": INGEST_BUCKET    
             })
             raise StorageError("failed to download image from storage")
-
-        with BytesIO(image_bytes) as image_file:
-            if response := asyncio.run(ingest_service.ingest(image_file, file_name)):
-                resp = response
+        
+        if response := ingest_service.ingest(BytesIO(image_bytes), file_name):
+            resp = response
 
         if resp.detail:
             raise IngestError(resp.detail)
@@ -58,7 +56,7 @@ def ingest_task(
             "key": key,
             "bucket": INGEST_BUCKET
         })
-        if not storage.delete(INGEST_BUCKET, key):
+        if not s3.delete(INGEST_BUCKET, key):
             logger.error("failed to delete image from storage after ingest failure", extra={
                 "key": key,
                 "bucket": INGEST_BUCKET
@@ -68,4 +66,6 @@ def ingest_task(
 
     finally:
         resp.elapsed_time = time.time() - t
-        return resp
+    
+    return resp
+        

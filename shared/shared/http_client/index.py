@@ -1,10 +1,10 @@
-from shared.model.index import IndexData, IndexResponse
+from shared.model.index import IndexItem, IndexResponse
 
 from . import AsyncHttpClient
 
 class AsyncHttpIndexClient(AsyncHttpClient):
     
-    async def create_index(self, data: IndexData) -> IndexResponse | None:
+    async def create_index(self, data: IndexItem) -> IndexResponse | None:
         endpoint = self.endpoint("/index")
         try:
             async with self.client as client:

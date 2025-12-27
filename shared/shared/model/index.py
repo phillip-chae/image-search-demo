@@ -9,7 +9,7 @@ class MilvusModel(BaseModel):
 class IndexItem(MilvusModel):
     id: str = Field(default_factory=uuid7str, description="Unique identifier for the indexed item")
     file_name: str = Field(default="", description="Original file name of the indexed item")
-    embedding: list[float] = Field(default_factory=list, description="Vector embedding of the item")
+    vector: list[float] = Field(default_factory=list, description="Vector of the item")
 
 class IndexRequest(BaseModel):
     idxs: list[IndexItem] = Field(default_factory=list, description="List of items to be indexed")
