@@ -1,0 +1,21 @@
+# Frontend runtime config (loaded by the browser at /config.yaml)
+# This file is intentionally YAML so it can match the rest of the repo's config style.
+#
+# Notes:
+# - Keep values as simple scalars (string/number/bool) and nested objects.
+# - The frontend defaults will be used if keys are missing.
+
+app:
+  title: Image Search
+
+api:
+  # These are same-origin paths (nginx reverse proxies to the right services)
+  searchBasePath: /api
+  imagesBasePath: /images
+
+  # Network safety
+  requestTimeoutMs: 20000
+
+ui:
+  # How many image cards to render at once (simple guardrail)
+  maxResultsRender: 200

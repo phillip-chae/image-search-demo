@@ -150,6 +150,19 @@ services:
     networks:
       - production-demo-network
 
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    image: production-demo/frontend:${IMAGE_TAG}
+    container_name: production-demo-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - searchapi
+      - cdnapi
+    networks:
+      - production-demo-network
 
   ingestworker:
     image: production-demo/ingestworker:${IMAGE_TAG}
