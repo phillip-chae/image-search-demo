@@ -1,0 +1,12 @@
+storage:
+  host: "minio.demo.local"
+  port: 9000
+  accesskey: "minioadmin"
+  secretkey: "minioadmin"
+  ssl: false
+  region: ""
+
+server:
+  port: 8000
+
+bucket: "indexed-images"

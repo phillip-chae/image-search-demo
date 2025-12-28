@@ -104,6 +104,23 @@ services:
     networks:
       - production-demo-network
 
+  cdnapi:
+    image: production-demo/cdnapi:${IMAGE_TAG}
+    container_name: production-demo-cdnapi
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.cdnapi.entrypoints=web
+      - traefik.http.routers.cdnapi.rule=Host(`cdn.${PROJECT_DOMAIN}`)
+      - traefik.http.routers.cdnapi.service=cdnapi
+      - traefik.http.services.cdnapi.loadbalancer.server.port=8000
+    ports:
+      - "8002:8000"
+    env_file:
+      - .env
+    depends_on:
+      - minio
+    networks:
+      - production-demo-network
 
   searchapi:
     image: production-demo/searchapi:${IMAGE_TAG}

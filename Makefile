@@ -16,6 +16,17 @@ docker-init:
 	docker network create production-demo-network || true
 
 # ======================================================
+# Swagger (Swaggo)
+
+.PHONY: swagger-cdnapi
+swagger-cdnapi:
+	cd cdnapi && \
+	$$(go env GOPATH)/bin/swag init -g main.go \
+		-o docs \
+		-d cmd/cdnapid,handler/api,router,service,config,model &&\
+	cd ..
+
+# ======================================================
 # Docker Builds
 
 INGESTAPI_NAME := ingestapi
@@ -64,6 +75,22 @@ docker-build-searchapi-cpu:
 		--build-arg GIT_REV=$(GIT_REV) \
 		--build-arg NAME=$(SEARCHAPI_NAME) \
 		--build-arg VER=$(VER)
+
+CDNAPINAME := cdnapi
+.PHONY: docker-build-cdnapi
+docker-build-cdnapi: swagger-cdnapi
+	docker build . -f docker/Dockerfile.${CDNAPINAME} -t production-demo/${CDNAPINAME}:${VER} \
+		--build-arg BUILD_TIME=$(BUILD_TIME) \
+		--build-arg GIT_REV=$(GIT_REV) \
+		--build-arg NAME=$(CDNAPINAME) \
+		--build-arg VER=$(VER)
+
+.PHONY: docker-build
+docker-build: docker-build-ingestapi docker-build-ingestworker docker-build-searchapi docker-build-cdnapi
+
+.PHONY: docker-build-cpu
+docker-build-cpu: docker-build-ingestworker-cpu docker-build-searchapi-cpu docker-build-ingestapi docker-build-cdnapi
+
 # ======================================================
 # Docker Compose
 .PHONY: docker-compose-up
