@@ -8,9 +8,11 @@ The system is designed as a distributed pipeline:
 
 *   **`ingestapi`**: A FastAPI-based entry point that accepts data and dispatches tasks. It handles request validation and queues jobs for asynchronous processing.
 *   **`ingestworker`**: A Celery worker that consumes tasks from the queue (Redis). It handles heavy lifting, data transformation, and storage operations.
-*   **`indexapi`**: (Planned) A service dedicated to managing vector indices (Milvus).
-*   **`searchapi`**: (Planned) A high-performance **Gin (Go)** server for serving user-facing search queries with low latency.
+*   **`searchapi`**: A FastAPI service that converts text queries into embeddings and performs vector search (Milvus) to return matching image IDs.
+*   **`cdnapi`**: A Go (Gin) service that serves raw image bytes by image ID (backed by object storage).
 *   **`shared`**: A core library containing common utilities, configuration schemas, and shared domain logic to ensure consistency across services.
+
+Supporting infrastructure (via Docker Compose): Redis (queue), Milvus + etcd (vector DB), and MinIO (object storage).
 
 ## 🧩 Code Patterns & Design Choices
 
@@ -48,13 +50,42 @@ The Dockerfiles are engineered for speed, security, and minimal footprint:
 
 The following components and features are planned for implementation:
 
-- [ ] **Frontend**: Develop a user interface (React/Next.js) for interacting with the ingestion and search APIs.
-- [ ] **Search API**: Implement the `searchapi` using **Gin (Go)** to expose high-performance vector search capabilities.
+- [x] **Minimal Frontend**: Static search page (Nginx) that calls `searchapi` then renders images from `cdnapi`.
+- [ ] **Frontend (Full UI)**: Develop a richer UI (React/Next.js) for interacting with the ingestion and search APIs.
+- [ ] **Search API (Go)**: (Optional) Re-implement `searchapi` using Gin (Go) to expose high-performance search capabilities.
 - [ ] **Observability Stack**:
     -   Deploy **Grafana** for visualization.
     -   Configure **Loki** for log aggregation.
     -   Set up **Prometheus** for metrics collection.
     -   Implement **Grafana Alloy** for telemetry data forwarding.
 - [ ] **Orchestration**:
-    -   **Docker Compose**: Create a comprehensive `docker-compose.yml` to spin up the entire stack (Redis, Milvus, Observability, Services) with a single command.
+    -   **Docker Compose**: Bring up the core stack (Redis, Milvus, MinIO, APIs) with a single command.
     -   **Kubernetes**: Develop a production-ready **Helm Chart** to demonstrate Kubernetes deployment skills, including ingress, scaling policies, and resource limits.
+
+## 🚀 Running Locally (Docker)
+
+Bring up the stack:
+
+1. Create required Docker volumes/network:
+    - `make docker-init`
+2. Start services:
+    - `docker compose up -d --build`
+
+Useful local ports (default compose):
+
+- `ingestapi`: `http://localhost:8000`
+- `searchapi`: `http://localhost:8001`
+- `cdnapi`: `http://localhost:8002`
+- `frontend`: `http://localhost:3000`
+
+## 🔎 Minimal Search Frontend
+
+This repo includes a small static search page served by an Nginx container. It avoids browser CORS issues by reverse-proxying API calls through the same origin:
+
+- UI: `http://localhost:3000`
+- Search request (proxied to `searchapi`): `GET /api/v1/image/search?text=...`
+- Images (proxied to `cdnapi`): `GET /images/{image_id}`
+
+Start it with:
+
+- `docker compose up -d --build frontend`
