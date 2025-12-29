@@ -355,10 +355,9 @@ Start it with:
 ## 📫 Contact
 
 **Phillip Chae**
-
-- GitHub: [@phillip-chae](https://github.com/phillip-chae)
-- LinkedIn: *(Coming soon)*
-- Email: *(Coming soon)*
+- [LinkedIn](https://www.linkedin.com/in/phillip-chae-13b1651b1/)
+- [GitHub](https://github.com/phillip-chae)
+- [Email](msc694@nyu.edu)
 
 ---
 
