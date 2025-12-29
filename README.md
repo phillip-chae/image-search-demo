@@ -52,14 +52,13 @@ The following components and features are planned for implementation:
 
 - [x] **Minimal Frontend**: Static search page (Nginx) that calls `searchapi` then renders images from `cdnapi`.
 - [ ] **Frontend (Full UI)**: Develop a richer UI (React/Next.js) for interacting with the ingestion and search APIs.
-- [ ] **Search API (Go)**: (Optional) Re-implement `searchapi` using Gin (Go) to expose high-performance search capabilities.
 - [ ] **Observability Stack**:
     -   Deploy **Grafana** for visualization.
     -   Configure **Loki** for log aggregation.
     -   Set up **Prometheus** for metrics collection.
     -   Implement **Grafana Alloy** for telemetry data forwarding.
 - [ ] **Orchestration**:
-    -   **Docker Compose**: Bring up the core stack (Redis, Milvus, MinIO, APIs) with a single command.
+    - [x]  **Docker Compose**: Bring up the core stack (Redis, Milvus, MinIO, APIs) with a single command.
     -   **Kubernetes**: Develop a production-ready **Helm Chart** to demonstrate Kubernetes deployment skills, including ingress, scaling policies, and resource limits.
 
 ## 🚀 Running Locally (Docker)
