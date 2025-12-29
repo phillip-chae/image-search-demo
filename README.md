@@ -1,6 +1,6 @@
-# Production Microservice Demo
+# Image Search Demo
 
-This repository demonstrates a production-grade microservice architecture designed for high-performance data ingestion and indexing. It serves as a showcase of modern Python development practices, including robust dependency injection, configuration management, and optimized containerization.
+This repository demonstrates a production-grade microservice architecture for image ingestion + indexing, plus a text-query search API that returns matching images. It’s intended as a portfolio showcase of modern Python/Go service design, dependency injection, configuration management, and containerization.
 
 ## 🏗️ Architecture Overview
 

@@ -2,7 +2,7 @@ services:
 
   redis:
     image: redis:8.0.5-alpine3.21
-    container_name: production-demo-redis
+    container_name: demo-redis
     labels:
       - traefik.enable=true
       - traefik.http.routers.redis.rule=Host(`redis.${PROJECT_DOMAIN}`)
@@ -11,15 +11,15 @@ services:
     ports:
       - 6379:6379
     networks:
-      - production-demo-network
+      - demo-network
     volumes:
       - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
-      - production-demo-redis:/data
+      - demo-redis:/data
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
   traefik:
     image: traefik:v3.6.4
-    container_name: production-demo-traefik
+    container_name: demo-traefik
     labels:
       - traefik.enable=true
       - traefik.http.routers.api.entrypoints=web
@@ -40,11 +40,11 @@ services:
       - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml
       - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic.yml
     networks:
-      - production-demo-network
+      - demo-network
   
   minio:
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
-    container_name: production-demo-minio
+    container_name: demo-minio
     command: minio server /minio_data --console-address ":9001"
     labels:
       - traefik.enable=true
@@ -58,12 +58,12 @@ services:
       - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
       - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
     volumes:
-      - production-demo-minio:/data
+      - demo-minio:/data
     networks:
-      - production-demo-network
+      - demo-network
 
   etcd:
-    container_name: production-demo-milvus-etcd
+    container_name: demo-milvus-etcd
     image: quay.io/coreos/etcd:v3.5.18
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
@@ -71,13 +71,13 @@ services:
       - ETCD_QUOTA_BACKEND_BYTES=4294967296
       - ETCD_SNAPSHOT_COUNT=50000
     volumes:
-      - production-demo-milvus-etcd:/etcd
+      - demo-milvus-etcd:/etcd
     command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     networks:
-      - production-demo-network
+      - demo-network
 
   milvus-standalone:
-    container_name: production-demo-milvus-standalone
+    container_name: demo-milvus-standalone
     image: milvusdb/milvus:2.6-20251226-81e48707
     command: ["milvus", "run", "standalone"]
     security_opt:
@@ -94,7 +94,7 @@ services:
       MINIO_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
       MINIO_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
     volumes:
-      - production-demo-milvus:/var/lib/milvus
+      - demo-milvus:/var/lib/milvus
     ports:
       - "19530:19530"
       - "9091:9091"
@@ -102,11 +102,11 @@ services:
       - "etcd"
       - "minio"
     networks:
-      - production-demo-network
+      - demo-network
 
   cdnapi:
-    image: production-demo/cdnapi:${IMAGE_TAG}
-    container_name: production-demo-cdnapi
+    image: demo/cdnapi:${IMAGE_TAG}
+    container_name: demo-cdnapi
     labels:
       - traefik.enable=true
       - traefik.http.routers.cdnapi.entrypoints=web
@@ -120,11 +120,11 @@ services:
     depends_on:
       - minio
     networks:
-      - production-demo-network
+      - demo-network
 
   searchapi:
-    image: production-demo/searchapi:${IMAGE_TAG}
-    container_name: production-demo-searchapi
+    image: demo/searchapi:${IMAGE_TAG}
+    container_name: demo-searchapi
     # Enable GPU support
     deploy:
       resources:
@@ -148,25 +148,25 @@ services:
       - minio
       - redis
     networks:
-      - production-demo-network
+      - demo-network
 
   frontend:
     build:
       context: .
       dockerfile: docker/Dockerfile.frontend
-    image: production-demo/frontend:${IMAGE_TAG}
-    container_name: production-demo-frontend
+    image: demo/frontend:${IMAGE_TAG}
+    container_name: demo-frontend
     ports:
       - "3000:80"
     depends_on:
       - searchapi
       - cdnapi
     networks:
-      - production-demo-network
+      - demo-network
 
   ingestworker:
-    image: production-demo/ingestworker:${IMAGE_TAG}
-    container_name: production-demo-ingestworker
+    image: demo/ingestworker:${IMAGE_TAG}
+    container_name: demo-ingestworker
     # Enable GPU support
     deploy:
       resources:
@@ -182,11 +182,11 @@ services:
       - milvus-standalone
       - minio
     networks:
-      - production-demo-network
+      - demo-network
     
   ingestapi:
-    image: production-demo/ingestapi:${IMAGE_TAG}
-    container_name: production-demo-ingestapi
+    image: demo/ingestapi:${IMAGE_TAG}
+    container_name: demo-ingestapi
     labels:
       - traefik.enable=true
       - traefik.http.routers.ingestapi.entrypoints=web
@@ -200,18 +200,18 @@ services:
     depends_on:
       - ingestworker
     networks:
-      - production-demo-network
+      - demo-network
 
 volumes:
-  production-demo-redis:
+  demo-redis:
     external: true
-  production-demo-minio:
+  demo-minio:
     external: true
-  production-demo-milvus-etcd:
+  demo-milvus-etcd:
     external: true
-  production-demo-milvus:
+  demo-milvus:
     external: true
 
 networks:
-  production-demo-network:
+  demo-network:
     driver: bridge

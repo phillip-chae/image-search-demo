@@ -19,7 +19,7 @@
 		"gpu": "optional"
 	},
 	"runArgs": [
-		"--network=production-demo-network"
+		"--network=demo-network"
 	],
 	"initializeCommand": "make docker-init",
 	"customizations": {

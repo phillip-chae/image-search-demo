@@ -46,7 +46,7 @@ class MilvusRepository(Generic[T]):
 
     def create(self, items: list[T]) -> list[str]:
         """Create new entries in the Milvus collection."""
-        data = [item.model_dump() for item in items]
+        data = [item.model_dump(exclude_unset=True, exclude_defaults=True) for item in items]
         results = self.client.insert(self.collection_name, data)
         return [str(id) for id in results["ids"]]
     

@@ -9,7 +9,7 @@ class MilvusModel(BaseModel):
 class IndexItem(MilvusModel):
     id: str = Field(default_factory=uuid7str, description="Unique identifier for the indexed item")
     file_name: str = Field(default="", description="Original file name of the indexed item")
-    distance: float = Field(default=0.0, description="Distance score from the query")
+    distance: float = Field(default=0.0, description="Distance score from the query",)
     vector: list[float] = Field(default_factory=list, description="Vector of the item")
 
 class IndexRequest(BaseModel):

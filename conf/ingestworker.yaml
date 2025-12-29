@@ -1,12 +1,12 @@
 S3:
-  Host: minio
+  Host: minio.demo.local
   Port: 9000
 
 Redis:
-  Host: redis
+  Host: redis.demo.local
   Port: 6379
   Db: 0
 
 MilvusDb: 
-  Host: milvus-standalone
+  Host: milvus.demo.local
   Port: 19530

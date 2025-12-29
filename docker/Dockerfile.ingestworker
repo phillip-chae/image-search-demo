@@ -9,7 +9,7 @@ ARG OS_VERSION=ubuntu24.04
 # Use a development image with the full CUDA toolkit for compiling dependencies.
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-${OS_VERSION} AS builder
 
-ARG HOME="/etc/production-demo"
+ARG HOME="/opt/image-search-demo"
 ARG TIMM_MODELS=""
 ARG OPENCLIP_MODEL="ViT-SO400M-16-SigLIP2-384"
 
@@ -64,7 +64,7 @@ RUN mkdir -p "${XDG_CACHE_HOME}" "${TORCH_HOME}" "${HF_HOME}" && \
 # Use a slim runtime image which is much smaller and more secure.
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn-runtime-${OS_VERSION}
 
-ARG HOME="/etc/production-demo"
+ARG HOME="/opt/image-search-demo"
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive

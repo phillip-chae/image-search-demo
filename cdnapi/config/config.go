@@ -5,7 +5,6 @@ import (
 )
 
 type Config struct {
-	Logger  config.LoggerConfig
 	Storage config.StorageConfig `mapstructure:"storage"`
 	Server  ServerConfig         `mapstructure:"server"`
 	Bucket  string               `mapstructure:"bucket"`

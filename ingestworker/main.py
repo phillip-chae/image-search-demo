@@ -37,7 +37,7 @@ def init_svcs(**kwargs):
 
 
 def init():
-    from . import project_root
+    from ingestworker import project_root
     from pathlib import Path
     from shared.model.index import INDEX_BUCKET
     from shared.storage.s3 import S3
